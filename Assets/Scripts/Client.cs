@@ -1,19 +1,24 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 
 class Client
 {
     public int Id => id;
     public TCP Tcp => tcp;
+    public UDP Udp => udp;
 
     static int dataBufferSize = 4096;
     int id;
     TCP tcp;
+    UDP udp;
 
     public Client(int _clientId)
     {
         id = _clientId;
         tcp = new TCP(id);
+        udp = new UDP(id);
     }
 
     public class TCP
@@ -57,7 +62,7 @@ class Client
             }
             catch (Exception _ex)
             {
-                Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
+                Debug.Log($"Error sending data to player {id} via TCP: {_ex}");
             }
         }
 
@@ -126,9 +131,46 @@ class Client
             }
             catch (Exception _ex)
             {
-                Console.WriteLine($"Error receiving TCP data: {_ex}");
+                Debug.Log($"Error receiving TCP data: {_ex}");
                 // TODO: disconnect
             }
+        }
+    }
+    public class UDP
+    {
+        public IPEndPoint endPoint;
+
+        private int id;
+
+        public UDP(int _id)
+        {
+            id = _id;
+        }
+
+        public void Connect(IPEndPoint _endPoint)
+        {
+            endPoint = _endPoint;
+            ServerSend.UDPTest(id);
+        }
+
+        public void SendData(Packet _packet)
+        {
+            Server.SendUDPData(endPoint, _packet);
+        }
+
+        public void HandleData(Packet _packetData)
+        {
+            int _packetLength = _packetData.ReadInt();
+            byte[] _packetBytes = _packetData.ReadBytes(_packetLength);
+
+            ThreadManager.ExecuteOnMainThread(() =>
+            {
+                using (Packet _packet = new Packet(_packetBytes))
+                {
+                    int _packetId = _packet.ReadInt();
+                    Server.packetHandlers[_packetId](id, _packet);
+                }
+            });
         }
     }
 }
