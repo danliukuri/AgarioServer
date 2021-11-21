@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-
 class Server
 {
     public static int MaxPlayers { get; private set; }
@@ -28,6 +27,8 @@ class Server
 
         Debug.Log($"Server started on port {Port}.");
     }
+
+    public static Client GetClient(int index) => clients[index];
 
     private static void TCPConnectCallback(IAsyncResult _result)
     {
