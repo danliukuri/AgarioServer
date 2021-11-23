@@ -2,23 +2,16 @@
 
 class ServerHandle
 {
-    public static void WelcomeReceived(int _fromClient, Packet _packet)
+    public static void WelcomeReceived(int fromClient, Packet packet)
     {
-        int _clientIdCheck = _packet.ReadInt();
-        string _username = _packet.ReadString();
+        int clientIdCheck = packet.ReadInt();
+        string username = packet.ReadString();
 
-        Debug.Log($"{Server.GetClient(_fromClient).Tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
-        if (_fromClient != _clientIdCheck)
+        Debug.Log($"{Server.GetClient(fromClient).Tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {fromClient}.");
+        if (fromClient != clientIdCheck)
         {
-            Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
+            Debug.Log($"Player \"{username}\" (ID: {fromClient}) has assumed the wrong client ID ({clientIdCheck})!");
         }
-        // TODO: send player into game
-    }
-
-    public static void UDPTestReceived(int _fromClient, Packet _packet)
-    {
-        string _msg = _packet.ReadString();
-
-        Debug.Log($"Received packet via UDP. Contains message: {_msg}");
+        Server.GetClient(fromClient).SendIntoGame(username);
     }
 }

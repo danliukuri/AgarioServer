@@ -27,23 +27,25 @@
         }
     }
     #region Packets
-    public static void Welcome(int _toClient, string _msg)
+    public static void Welcome(int toClient, string msg)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.welcome))
+        using (Packet packet = new Packet((int)ServerPackets.Welcome))
         {
-            _packet.Write(_msg);
-            _packet.Write(_toClient);
+            packet.Write(msg);
+            packet.Write(toClient);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPData(toClient, packet);
         }
     }
-    public static void UDPTest(int _toClient)
+    public static void SpawnPlayer(int toClient, Player player)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.udpTest))
+        using (Packet _packet = new Packet((int)ServerPackets.SpawnPlayer))
         {
-            _packet.Write("A test packet for UDP.");
+            _packet.Write(player.Id);
+            _packet.Write(player.Username);
+            _packet.Write(player.transform.position);
 
-            SendUDPData(_toClient, _packet);
+            SendTCPData(toClient, _packet);
         }
     }
     #endregion

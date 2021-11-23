@@ -35,6 +35,7 @@ class Server
     }
 
     public static Client GetClient(int index) => clients[index];
+    public static int ClientsCount() => clients.Count;
 
     private static void TCPConnectCallback(IAsyncResult _result)
     {
@@ -116,8 +117,7 @@ class Server
 
         packetHandlers = new Dictionary<int, PacketHandler>()
         {
-            { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
-            { (int)ClientPackets.udpTestReceived, ServerHandle.UDPTestReceived }
+            { (int)ClientPackets.WelcomeReceived, ServerHandle.WelcomeReceived }
         };
         Debug.Log("Initialized packets.");
     }

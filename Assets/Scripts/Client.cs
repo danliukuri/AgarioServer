@@ -5,12 +5,14 @@ using UnityEngine;
 
 class Client
 {
+    public Player Player => player;
     public int Id => id;
     public TCP Tcp => tcp;
     public UDP Udp => udp;
 
     static int dataBufferSize = 4096;
     int id;
+    Player player;
     TCP tcp;
     UDP udp;
 
@@ -19,6 +21,37 @@ class Client
         id = _clientId;
         tcp = new TCP(id);
         udp = new UDP(id);
+    }
+
+    /// <summary>Sends the client into the game and informs other clients of the new player.</summary>
+    /// <param name="playerName">The username of the new player.</param>
+    public void SendIntoGame(string playerName)
+    {
+        player = NetworkManager.Instance.InstantiatePlayer();
+        player.Initialize(id, playerName);
+
+        // Send all players to the new player
+        for (int i = 1; i <= Server.ClientsCount(); i++)
+        {
+            Client client = Server.GetClient(i);
+            if (client.Player != null)
+            {
+                if (client.id != id)
+                {
+                    ServerSend.SpawnPlayer(id, client.Player);
+                }
+            }
+        }
+
+        // Send the new player to all players (including himself)
+        for (int i = 1; i <= Server.ClientsCount(); i++)
+        {
+            Client client = Server.GetClient(i);
+            if (client.Player != null)
+            {
+                ServerSend.SpawnPlayer(client.Id, player);
+            }
+        }
     }
 
     public class TCP
@@ -150,7 +183,6 @@ class Client
         public void Connect(IPEndPoint _endPoint)
         {
             endPoint = _endPoint;
-            ServerSend.UDPTest(id);
         }
 
         public void SendData(Packet _packet)

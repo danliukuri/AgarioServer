@@ -1,6 +1,6 @@
 ﻿/// <summary>Sent from server to client.</summary>
 public enum ServerPackets
 {
-    welcome = 1,
-    udpTest
+    Welcome = 1,
+    SpawnPlayer
 }

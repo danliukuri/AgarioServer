@@ -2,7 +2,10 @@
 
 public class NetworkManager : MonoBehaviour
 {
-    public static NetworkManager instance;
+    public static NetworkManager Instance => instance;
+
+    [SerializeField] GameObject playerPrefab;
+    static NetworkManager instance;
 
     private void Awake()
     {
@@ -27,5 +30,10 @@ public class NetworkManager : MonoBehaviour
         #else
         Server.Start(50, 26950);
         #endif
+    }
+
+    public Player InstantiatePlayer()
+    {
+        return Instantiate(playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Player>();
     }
 }
