@@ -1,4 +1,6 @@
-﻿class ServerSend
+﻿using UnityEngine;
+
+class ServerSend
 {
     private static void SendTCPData(int _toClient, Packet _packet)
     {
@@ -39,13 +41,23 @@
     }
     public static void SpawnPlayer(int toClient, Player player)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.SpawnPlayer))
+        using (Packet packet = new Packet((int)ServerPackets.SpawnPlayer))
         {
-            _packet.Write(player.Id);
-            _packet.Write(player.Username);
-            _packet.Write(player.transform.position);
+            packet.Write(player.Id);
+            packet.Write(player.Username);
+            packet.Write(player.transform.position);
 
-            SendTCPData(toClient, _packet);
+            SendTCPData(toClient, packet);
+        }
+    }
+    public static void PlayerMovement(int playerId, Vector2 position)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.PlayerMovement))
+        {
+            packet.Write(playerId);
+            packet.Write(position);
+
+            SendUDPDataToAll(packet);
         }
     }
     #endregion

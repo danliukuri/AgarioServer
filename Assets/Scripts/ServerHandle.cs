@@ -14,4 +14,10 @@ class ServerHandle
         }
         Server.GetClient(fromClient).SendIntoGame(username);
     }
+
+    public static void PlayerMovement(int fromClient, Packet packet)
+    {
+        Vector2 position = packet.ReadVector2();
+        Server.GetClient(fromClient).Player.Controller.TargetPosition = position;
+    }
 }

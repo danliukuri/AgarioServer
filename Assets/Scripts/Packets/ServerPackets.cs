@@ -2,5 +2,6 @@
 public enum ServerPackets
 {
     Welcome = 1,
-    SpawnPlayer
+    SpawnPlayer,
+    PlayerMovement
 }
