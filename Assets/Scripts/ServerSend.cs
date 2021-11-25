@@ -39,6 +39,16 @@ class ServerSend
             SendTCPData(toClient, packet);
         }
     }
+    public static void PlayerDisconnected(int playerId)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.PlayerDisconnected))
+        {
+            packet.Write(playerId);
+
+            SendTCPDataToAll(packet);
+        }
+    }
+
     public static void SpawnPlayer(int toClient, Player player)
     {
         using (Packet packet = new Packet((int)ServerPackets.SpawnPlayer))

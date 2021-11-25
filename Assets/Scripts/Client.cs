@@ -53,6 +53,22 @@ class Client
             }
         }
     }
+    /// <summary>Disconnects the client and stops all network traffic.</summary>
+    private void Disconnect()
+    {
+        Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
+
+        ThreadManager.ExecuteOnMainThread(() =>
+        {
+            UnityEngine.Object.Destroy(player.gameObject);
+            player = null;
+        });
+
+        tcp.Disconnect();
+        udp.Disconnect();
+
+        ServerSend.PlayerDisconnected(id);
+    }
 
     public class TCP
     {
@@ -83,6 +99,14 @@ class Client
 
             ServerSend.Welcome(id, "Welcome to the server!");
         }
+        public void Disconnect()
+        {
+            socket.Close();
+            stream =  null;
+            receivedData = null;
+            receiveBuffer = null;
+            socket = null;
+        }
 
         public void SendData(Packet _packet)
         {
@@ -98,7 +122,6 @@ class Client
                 Debug.Log($"Error sending data to player {id} via TCP: {_ex}");
             }
         }
-
         private bool HandleData(byte[] _data)
         {
             int _packetLength = 0;
@@ -152,7 +175,7 @@ class Client
                 int _byteLength = stream.EndRead(_result);
                 if (_byteLength <= 0)
                 {
-                    // TODO: disconnect
+                    Server.GetClient(id).Disconnect();
                     return;
                 }
 
@@ -165,7 +188,7 @@ class Client
             catch (Exception _ex)
             {
                 Debug.Log($"Error receiving TCP data: {_ex}");
-                // TODO: disconnect
+                Server.GetClient(id).Disconnect();
             }
         }
     }
@@ -184,12 +207,15 @@ class Client
         {
             endPoint = _endPoint;
         }
+        public void Disconnect()
+        {
+            endPoint = null;
+        }
 
         public void SendData(Packet _packet)
         {
             Server.SendUDPData(endPoint, _packet);
         }
-
         public void HandleData(Packet _packetData)
         {
             int _packetLength = _packetData.ReadInt();

@@ -2,6 +2,7 @@
 public enum ServerPackets
 {
     Welcome = 1,
+    PlayerDisconnected,
     SpawnPlayer,
     PlayerMovement
 }
