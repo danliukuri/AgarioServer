@@ -2,13 +2,16 @@
 
 public class NetworkManager : MonoBehaviour
 {
-    public static NetworkManager Instance => instance;
 
+    #region Fields
+    [SerializeField] int maxPlayers;
     [SerializeField] int port;
 
     [SerializeField] GameObject playerPrefab;
     static NetworkManager instance;
+    #endregion
 
+    #region Methods
     private void Awake()
     {
         if (instance == null)
@@ -27,15 +30,16 @@ public class NetworkManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 120;
 
-        #if UNITY_EDITOR
+#if UNITYEDITOR
         Debug.Log("Build the project to start the server!");
-        #else
-        Server.Start(50, port);
-        #endif
+#else
+        Server.Start(maxPlayers, port);
+#endif
     }
 
-    public Player InstantiatePlayer()
+    public static Player InstantiatePlayer()
     {
-        return Instantiate(playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Player>();
+        return Instantiate(instance.playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Player>();
     }
+    #endregion
 }

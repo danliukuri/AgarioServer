@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20c73e2a4e6b667458fcadd4f0996082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxPlayers: 50
   port: 26950
   playerPrefab: {fileID: 7259591874266774353, guid: 8c9067cc1f10853438e53aa957feeb31, type: 3}
 --- !u!114 &2014640779

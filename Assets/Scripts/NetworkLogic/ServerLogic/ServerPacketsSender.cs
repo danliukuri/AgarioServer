@@ -1,34 +1,8 @@
 ﻿using UnityEngine;
 
-class ServerSend
+class ServerPacketsSender
 {
-    private static void SendTCPData(int _toClient, Packet _packet)
-    {
-        _packet.WriteLength();
-        Server.GetClient(_toClient).Tcp.SendData(_packet);
-    }
-    private static void SendUDPData(int _toClient, Packet _packet)
-    {
-        _packet.WriteLength();
-        Server.GetClient(_toClient).Udp.SendData(_packet);
-    }
-    private static void SendTCPDataToAll(Packet _packet)
-    {
-        _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
-        {
-            Server.GetClient(i).Tcp.SendData(_packet);
-        }
-    }
-    private static void SendUDPDataToAll(Packet _packet)
-    {
-        _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
-        {
-            Server.GetClient(i).Udp.SendData(_packet);
-        }
-    }
-    #region Packets
+    #region PacketsSending
     public static void Welcome(int toClient, string msg)
     {
         using (Packet packet = new Packet((int)ServerPackets.Welcome))
@@ -68,6 +42,35 @@ class ServerSend
             packet.Write(position);
 
             SendUDPDataToAll(packet);
+        }
+    }
+    #endregion
+
+    #region WaysToSend
+    private static void SendTCPData(int toClient, Packet packet)
+    {
+        packet.WriteLength();
+        Server.GetClient(toClient).Tcp.SendData(packet);
+    }
+    private static void SendUDPData(int toClient, Packet packet)
+    {
+        packet.WriteLength();
+        Server.GetClient(toClient).Udp.SendData(packet);
+    }
+    private static void SendTCPDataToAll(Packet packet)
+    {
+        packet.WriteLength();
+        for (int i = 0; i < Server.MaxPlayers; i++)
+        {
+            Server.GetClient(i).Tcp.SendData(packet);
+        }
+    }
+    private static void SendUDPDataToAll(Packet packet)
+    {
+        packet.WriteLength();
+        for (int i = 0; i < Server.MaxPlayers; i++)
+        {
+            Server.GetClient(i).Udp.SendData(packet);
         }
     }
     #endregion

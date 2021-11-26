@@ -3,11 +3,16 @@
 [RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
+    #region Properties
     public Vector2 TargetPosition { get; set; }
+    #endregion
 
+    #region Fields
     Player player;
     float speed = 5f;
+    #endregion
 
+    #region Methods
     void Awake()
     {
         player = GetComponent<Player>();
@@ -24,6 +29,7 @@ public class PlayerController : MonoBehaviour
             position,
             speed * Time.fixedDeltaTime);
 
-        ServerSend.PlayerMovement(player.Id, newPosition);
+        ServerPacketsSender.PlayerMovement(player.Id, newPosition);
     }
+    #endregion
 }

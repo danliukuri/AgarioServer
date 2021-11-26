@@ -1,7 +1,7 @@
 ﻿/// <summary>Sent from server to client.</summary>
 public enum ServerPackets
 {
-    Welcome = 1,
+    Welcome,
     PlayerDisconnected,
     SpawnPlayer,
     PlayerMovement
