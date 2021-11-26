@@ -4,6 +4,8 @@ public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager Instance => instance;
 
+    [SerializeField] int port;
+
     [SerializeField] GameObject playerPrefab;
     static NetworkManager instance;
 
@@ -22,10 +24,13 @@ public class NetworkManager : MonoBehaviour
 
     private void Start()
     {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 120;
+
         #if UNITY_EDITOR
         Debug.Log("Build the project to start the server!");
         #else
-        Server.Start(50, 26950);
+        Server.Start(50, port);
         #endif
     }
 
