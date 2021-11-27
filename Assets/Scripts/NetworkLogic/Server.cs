@@ -21,7 +21,7 @@ class Server
     static UdpClient udpListener;
     #endregion
 
-    #region Fields
+    #region Methods
     public static void Start(int maxPlayers, int port)
     {
         MaxPlayers = maxPlayers;
@@ -50,6 +50,11 @@ class Server
             ServerPacketsHandler.PlayerMovement
         };
         Debug.Log("Initialized packets.");
+    }
+    public static void Stop()
+    {
+        tcpListener.Stop();
+        udpListener.Close();
     }
 
     public static Client GetClient(int index) => clients[index];

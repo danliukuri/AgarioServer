@@ -20,5 +20,11 @@ public class Player : MonoBehaviour
     {
         Controller = GetComponent<PlayerController>();
     }
+    public void Reset()
+    {
+        Id = default;
+        Username = default;
+        Controller?.Reset();
+    }
     #endregion
 }

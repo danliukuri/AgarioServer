@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
     #region Properties
@@ -9,17 +8,24 @@ public class PlayerController : MonoBehaviour
 
     #region Fields
     Player player;
-    float speed = 5f;
+    float speed;
+    const float defaultSpeed = 5f;
     #endregion
 
     #region Methods
     void Awake()
     {
         player = GetComponent<Player>();
+        speed = defaultSpeed;
     }
     public void FixedUpdate()
     {
         Move(TargetPosition);
+    }
+    public void Reset()
+    {
+        transform.position = TargetPosition = Vector3.zero;
+        speed = defaultSpeed;
     }
 
     private void Move(Vector2 position)

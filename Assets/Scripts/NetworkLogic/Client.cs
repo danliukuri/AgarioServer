@@ -21,8 +21,7 @@ class Client
     /// <param name="playerName">The username of the new player.</param>
     public void SendIntoGame(string playerName)
     {
-        Player = NetworkManager.InstantiatePlayer();
-        Player.Initialize(Id, playerName);
+        Player = PlayersManager.SpawnPlayer(Id, playerName);
 
         // Send all players to the new player
         for (int i = 0; i < Server.ClientsCount(); i++)
@@ -54,7 +53,7 @@ class Client
 
         ThreadManager.ExecuteOnMainThread(() =>
         {
-            UnityEngine.Object.Destroy(Player.gameObject);
+            PlayersManager.RemovePlayer(Player);
             Player = null;
         });
 

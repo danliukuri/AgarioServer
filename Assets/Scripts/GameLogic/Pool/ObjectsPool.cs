@@ -56,7 +56,7 @@ namespace Pool
 
 		void OnValidate()
 		{
-			objectName = gameObjectPrefab.name;
+			objectName = gameObjectPrefab?.name;
 		}
 		void Awake()
 		{
