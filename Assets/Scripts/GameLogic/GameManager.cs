@@ -3,13 +3,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region Fields
-    [SerializeField] Field fieldGenerator;
+    [SerializeField] Field field;
     #endregion
 
     #region Methods
     void Start()
     {
-        fieldGenerator.Generate();
+        field.Generate();
     }
     #endregion
 }

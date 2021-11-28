@@ -23,6 +23,30 @@ class ServerPacketsSender
         }
     }
 
+    public static void FieldGenerated(int toClient)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.FieldGenerated))
+        {
+            packet.Write(Field.NumberOfSectorsPerHeight);
+            packet.Write(Field.NumberOfSectorsPerWidth);
+            packet.Write(Field.StartSectorPosition);
+            packet.Write(Field.SectorSize);
+
+            SendTCPData(toClient, packet);
+        }
+    }
+    public static void CurrentFieldSectorUpdate(int toClient, FieldSector fieldSector)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.CurrentFieldSectorUpdate))
+        {
+            (int HightIndex, int WidthIndex) = fieldSector.Indexes;
+            packet.Write(HightIndex);
+            packet.Write(WidthIndex);
+
+            SendTCPData(toClient, packet);
+        }
+    }
+
     public static void SpawnPlayer(int toClient, Player player)
     {
         using (Packet packet = new Packet((int)ServerPackets.SpawnPlayer))
