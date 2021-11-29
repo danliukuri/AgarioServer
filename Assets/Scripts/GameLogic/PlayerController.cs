@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
             position,
             speed * Time.fixedDeltaTime);
 
-        ServerPacketsSender.PlayerMovement(player.Id, newPosition);
+        ServerPacketsSender.PlayerMovementForVisiblePlayers(player, newPosition);
     }
     #endregion
 }

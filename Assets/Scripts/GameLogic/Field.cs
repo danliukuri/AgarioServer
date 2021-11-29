@@ -1,4 +1,5 @@
 using Pool;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(EdgeCollider2D))]
@@ -54,6 +55,30 @@ public class Field : MonoBehaviour
 
     public static FieldSector GetSector(int heightIndex, int widthIndex) => sectors[heightIndex, widthIndex];
 
+    static List<FieldSector> GetSectorsInExtendedZone(FieldSector currentFieldSector, int expansionMagnitude)
+    {
+        ((int Min, int Max) Hight, (int Min, int Max) Width) sectorsExtendedZone =
+            GetExtendedZone(currentFieldSector.Indexes, expansionMagnitude,
+            (NumberOfSectorsPerHeight, NumberOfSectorsPerWidth));
+
+        List<FieldSector> sectorsInExtendedZone = new List<FieldSector>();
+        for (int i = sectorsExtendedZone.Hight.Min; i <= sectorsExtendedZone.Hight.Max; i++)
+            for (int j = sectorsExtendedZone.Width.Min; j <= sectorsExtendedZone.Width.Max; j++)
+                sectorsInExtendedZone.Add(sectors[i, j]);
+        return sectorsInExtendedZone;
+    }
+    public static List<Player> GetOtherPlayersInExtendedZone(int playerId,
+        FieldSector playerFieldSector, int expansionMagnitude)
+    {
+        List<Player> otherPlayers = new List<Player>();
+        List<FieldSector> sectorsInExtendedZone = GetSectorsInExtendedZone(playerFieldSector, expansionMagnitude);
+        foreach (FieldSector fieldSector in sectorsInExtendedZone)
+            foreach (Player otherPlayer in fieldSector.Players)
+                if (otherPlayer.Id != playerId)
+                    otherPlayers.Add(otherPlayer);
+        return otherPlayers;
+    }
+
     public void Generate()
     {
         sectors = new FieldSector[numberOfSectorsPerHeight, numberOfSectorsPerWidth];
@@ -92,5 +117,26 @@ public class Field : MonoBehaviour
             startPoint
         };
     }
+    #endregion
+
+    #region ArrayZoneMethods
+    static int GetExtendedMinIndex(int index, int expansionMagnitude) =>
+        index < expansionMagnitude ? 0 : index - expansionMagnitude;
+    static int GetExtendedMaxIndex(int index, int expansionMagnitude, int maxArrayLength) =>
+        index >= maxArrayLength - expansionMagnitude ? maxArrayLength - 1 : index + expansionMagnitude;
+    static ((int Min, int Max) Hight, (int Min, int Max) Width) GetExtendedZone(
+           ((int Min, int Max) Hight, (int Min, int Max) Width) zone,
+           int expansionMagnitude, (int Hight, int Width) arrayDimensions)
+    {
+        ((int Min, int Max) Hight, (int Min, int Max) Width) expandedZone;
+        expandedZone.Hight.Min = GetExtendedMinIndex(zone.Hight.Min, expansionMagnitude);
+        expandedZone.Hight.Max = GetExtendedMaxIndex(zone.Hight.Max, expansionMagnitude, arrayDimensions.Hight);
+        expandedZone.Width.Min = GetExtendedMinIndex(zone.Width.Min, expansionMagnitude);
+        expandedZone.Width.Max = GetExtendedMaxIndex(zone.Width.Max, expansionMagnitude, arrayDimensions.Width);
+        return expandedZone;
+    }
+    static ((int Min, int Max) Hight, (int Min, int Max) Width) GetExtendedZone(
+        (int Hight, int Width) zone, int expansionMagnitude, (int Hight, int Width) arrayDimensions) =>
+        GetExtendedZone(((zone.Hight, zone.Hight), (zone.Width, zone.Width)), expansionMagnitude, arrayDimensions);
     #endregion
 }

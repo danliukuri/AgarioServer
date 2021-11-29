@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 class ServerPacketsSender
 {
@@ -53,54 +54,117 @@ class ServerPacketsSender
             SendTCPData(toClient, packet);
         }
     }
-    public static void RemovePlayer(int playerId)
+    static void RemovePlayer(int toClient, int playerId)
     {
         using (Packet packet = new Packet((int)ServerPackets.RemovePlayer))
         {
             packet.Write(playerId);
 
-            SendTCPDataToAll(packet);
+            SendTCPData(toClient, packet);
         }
     }
 
-    public static void PlayerMovement(int playerId, Vector2 position)
+    static void PlayerMovement(int toClient, int fromClient, Vector2 position)
     {
         using (Packet packet = new Packet((int)ServerPackets.PlayerMovement))
         {
-            packet.Write(playerId);
+            packet.Write(fromClient);
             packet.Write(position);
 
-            SendUDPDataToAll(packet);
+            SendUDPData(toClient, packet);
         }
     }
     #endregion
 
+    #region PacketsSendingExtensions
+    public static void SpawnVisiblePlayers(Player player)
+    {
+        int playerId = player.Id;
+
+        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
+        foreach (Player otherPlayer in otherPlayers)
+        {
+            if (!player.VisiblePlayers.Contains(otherPlayer))
+            {
+                player.VisiblePlayers.Add(otherPlayer);
+                SpawnPlayer(playerId, otherPlayer); // Spawn visible players for player
+            }
+            if (!otherPlayer.VisiblePlayers.Contains(player))
+            {
+                otherPlayer.VisiblePlayers.Add(player);
+                SpawnPlayer(otherPlayer.Id, player); // Spawn player for visible players
+            }
+        }
+    }
+    public static void RemoveInvisiblePlayers(Player player, FieldSector previousPlayerFieldSector)
+    {
+        int playerId = player.Id;
+
+        List<Player> previousOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            previousPlayerFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
+        List<Player> currentOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
+
+        foreach (Player previousOtherPlayer in previousOtherPlayers)
+        {
+            bool isPreviousOtherPlayerNotCurrent = true;
+            foreach (Player currentOtherPlayer in currentOtherPlayers)
+                if (previousOtherPlayer == currentOtherPlayer)
+                    isPreviousOtherPlayerNotCurrent = false;
+
+            if (isPreviousOtherPlayerNotCurrent)
+            {
+                if (player.VisiblePlayers.Contains(previousOtherPlayer))
+                {
+                    player.VisiblePlayers.Remove(previousOtherPlayer);
+                    RemovePlayer(playerId, previousOtherPlayer.Id); // Remove invisible players for player 
+                }
+                if (previousOtherPlayer.VisiblePlayers.Contains(player))
+                {
+                    previousOtherPlayer.VisiblePlayers.Remove(player);
+                    RemovePlayer(previousOtherPlayer.Id, playerId); // Remove player for invisible players
+                }
+            }
+        }
+    }
+    public static void PlayerDisconnected(Player player)
+    {
+        int playerId = player.Id;
+
+        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
+        foreach (Player otherPlayer in otherPlayers)
+            if (otherPlayer.VisiblePlayers.Contains(player))
+            {
+                otherPlayer.VisiblePlayers.Remove(player);
+                RemovePlayer(otherPlayer.Id, playerId); // Remove player for visible players
+            }
+    }
+
+    public static void PlayerMovementForVisiblePlayers(Player player, Vector2 position)
+    {
+        int playerId = player.Id;
+        PlayerMovement(playerId, playerId, position); // Send this player his movement
+        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
+        foreach (Player otherPlayer in otherPlayers)
+            if (player.VisiblePlayers.Contains(otherPlayer))
+                // Send this player's movement to his visible players
+                PlayerMovement(otherPlayer.Id, playerId, position);
+    }
+    #endregion
+
     #region WaysToSend
-    private static void SendTCPData(int toClient, Packet packet)
+    static void SendTCPData(int toClient, Packet packet)
     {
         packet.WriteLength();
         Server.GetClient(toClient).Tcp.SendData(packet);
     }
-    private static void SendUDPData(int toClient, Packet packet)
+    static void SendUDPData(int toClient, Packet packet)
     {
         packet.WriteLength();
         Server.GetClient(toClient).Udp.SendData(packet);
-    }
-    private static void SendTCPDataToAll(Packet packet)
-    {
-        packet.WriteLength();
-        for (int i = 0; i < Server.MaxPlayers; i++)
-        {
-            Server.GetClient(i).Tcp.SendData(packet);
-        }
-    }
-    private static void SendUDPDataToAll(Packet packet)
-    {
-        packet.WriteLength();
-        for (int i = 0; i < Server.MaxPlayers; i++)
-        {
-            Server.GetClient(i).Udp.SendData(packet);
-        }
     }
     #endregion
 }

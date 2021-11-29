@@ -23,28 +23,8 @@ class Client
     {
         Player = PlayersManager.SpawnPlayer(Id, playerName);
 
-        // Send all players to the new player
-        for (int i = 0; i < Server.ClientsCount(); i++)
-        {
-            Client client = Server.GetClient(i);
-            if (client.Player != null)
-            {
-                if (client.Id != Id)
-                {
-                    ServerPacketsSender.SpawnPlayer(Id, client.Player);
-                }
-            }
-        }
-
-        // Send the new player to all players (including himself)
-        for (int i = 0; i < Server.ClientsCount(); i++)
-        {
-            Client client = Server.GetClient(i);
-            if (client.Player != null)
-            {
-                ServerPacketsSender.SpawnPlayer(client.Id, Player);
-            }
-        }
+        ServerPacketsSender.SpawnPlayer(Id, Player);
+        ServerPacketsSender.SpawnVisiblePlayers(Player);
     }
     /// <summary>Disconnects the client and stops all network traffic.</summary>
     public void Disconnect()
@@ -60,7 +40,7 @@ class Client
         Tcp.Disconnect();
         Udp.Disconnect();
 
-        ServerPacketsSender.RemovePlayer(Id);
+        ServerPacketsSender.PlayerDisconnected(Player);
     }
     #endregion
 }

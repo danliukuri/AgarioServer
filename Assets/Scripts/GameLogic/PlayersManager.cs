@@ -47,7 +47,7 @@ public class PlayersManager : MonoBehaviour
         Player player = playerGameObject.GetComponent<Player>();
         player.Controller.TargetPosition = playerGameObject.transform.position;
 
-        player.Initialize(id, playerName);
+        player.Initialize(id, playerName, startFieldSector);
         playerGameObject.SetActive(true);
 
         ServerPacketsSender.FieldGenerated(id);
