@@ -167,10 +167,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2615ce5315fd1094db5c9d3a8d7bc8d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sectorGameObject: {fileID: 5852829184354855987, guid: d242307f5b0e4c644a0e832cd7348491, type: 3}
-  startSectorPosition: {x: 5, y: 2.5}
   numberOfSectorsPerHeight: 20
   numberOfSectorsPerWidth: 10
+  sectorGameObject: {fileID: 5852829184354855987, guid: d242307f5b0e4c644a0e832cd7348491, type: 3}
+  startSectorPosition: {x: 5, y: 2.5}
+  expansionMagnitudeOfVisibleSectors: 1
+  expansionMagnitudeOfInvisibleSectors: 2
 --- !u!68 &698450609
 EdgeCollider2D:
   m_ObjectHideFlags: 0
@@ -237,6 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 7259591874266774353, guid: 8c9067cc1f10853438e53aa957feeb31, type: 3}
+  numberOfSectorsToIndentToSpawnPlayers: 1
 --- !u!1 &1930801878
 GameObject:
   m_ObjectHideFlags: 0

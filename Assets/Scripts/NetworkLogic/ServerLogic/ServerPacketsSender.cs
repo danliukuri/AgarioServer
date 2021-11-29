@@ -29,8 +29,12 @@ class ServerPacketsSender
         {
             packet.Write(Field.NumberOfSectorsPerHeight);
             packet.Write(Field.NumberOfSectorsPerWidth);
+
             packet.Write(Field.StartSectorPosition);
             packet.Write(Field.SectorSize);
+
+            packet.Write(Field.ExpansionMagnitudeOfVisibleSectors);
+            packet.Write(Field.ExpansionMagnitudeOfInvisibleSectors);
 
             SendTCPData(toClient, packet);
         }

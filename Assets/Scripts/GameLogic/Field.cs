@@ -7,15 +7,27 @@ public class Field : MonoBehaviour
     #region Properties
     public static int NumberOfSectorsPerHeight => instance.numberOfSectorsPerHeight;
     public static int NumberOfSectorsPerWidth => instance.numberOfSectorsPerWidth;
+
     public static Vector2 StartSectorPosition => instance.startSectorPosition;
     public static Vector2 SectorSize => instance.sectorSize;
+
+    public static int ExpansionMagnitudeOfVisibleSectors => instance.expansionMagnitudeOfVisibleSectors;
+    public static int ExpansionMagnitudeOfInvisibleSectors => instance.expansionMagnitudeOfInvisibleSectors;
     #endregion
 
     #region Fields
-    [SerializeField] GameObject sectorGameObject;
-    [SerializeField] Vector2 startSectorPosition;
     [SerializeField] int numberOfSectorsPerHeight;
     [SerializeField] int numberOfSectorsPerWidth;
+
+    [SerializeField] GameObject sectorGameObject;
+    [SerializeField] Vector2 startSectorPosition;
+
+    [Tooltip("The number by how much you need to expand the area of visible sectors. " +
+        "Means that if this value is 1, the visible zone will be 3x3, if 2 then 5x5, etc.")]
+    [SerializeField] int expansionMagnitudeOfVisibleSectors;
+    [Tooltip("The number by how much you need to expand the zone of invisible sectors. " +
+        "Means that if this value is 1, the invisible zone will be 3x3, if 2 then 5x5, etc.")]
+    [SerializeField] int expansionMagnitudeOfInvisibleSectors;
 
     static FieldSector[,] sectors;
     Vector2 sectorSize;
