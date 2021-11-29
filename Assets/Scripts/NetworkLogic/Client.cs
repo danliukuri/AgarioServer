@@ -60,7 +60,7 @@ class Client
         Tcp.Disconnect();
         Udp.Disconnect();
 
-        ServerPacketsSender.PlayerDisconnected(Id);
+        ServerPacketsSender.RemovePlayer(Id);
     }
     #endregion
 }

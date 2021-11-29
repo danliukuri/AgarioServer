@@ -2,9 +2,9 @@
 public enum ServerPackets
 {
     Welcome,
-    PlayerDisconnected,
     FieldGenerated,
     CurrentFieldSectorUpdate,
     SpawnPlayer,
+    RemovePlayer,
     PlayerMovement
 }

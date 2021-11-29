@@ -13,15 +13,6 @@ class ServerPacketsSender
             SendTCPData(toClient, packet);
         }
     }
-    public static void PlayerDisconnected(int playerId)
-    {
-        using (Packet packet = new Packet((int)ServerPackets.PlayerDisconnected))
-        {
-            packet.Write(playerId);
-
-            SendTCPDataToAll(packet);
-        }
-    }
 
     public static void FieldGenerated(int toClient)
     {
@@ -62,6 +53,16 @@ class ServerPacketsSender
             SendTCPData(toClient, packet);
         }
     }
+    public static void RemovePlayer(int playerId)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.RemovePlayer))
+        {
+            packet.Write(playerId);
+
+            SendTCPDataToAll(packet);
+        }
+    }
+
     public static void PlayerMovement(int playerId, Vector2 position)
     {
         using (Packet packet = new Packet((int)ServerPackets.PlayerMovement))
