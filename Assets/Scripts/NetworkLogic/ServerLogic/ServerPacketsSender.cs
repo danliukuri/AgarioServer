@@ -22,7 +22,7 @@ class ServerPacketsSender
             packet.Write(Field.NumberOfSectorsPerHeight);
             packet.Write(Field.NumberOfSectorsPerWidth);
 
-            packet.Write(Field.StartSectorPosition);
+            packet.Write(Field.Position);
             packet.Write(Field.SectorSize);
 
             packet.Write(Field.ExpansionMagnitudeOfVisibleSectors);
