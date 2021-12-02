@@ -8,5 +8,6 @@ public enum ServerPackets
     RemovePlayer,
     PlayerMovement,
     SpawnFood,
-    RemoveFood
+    RemoveFood,
+    EatingFood
 }

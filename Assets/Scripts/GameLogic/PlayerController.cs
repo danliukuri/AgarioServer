@@ -4,19 +4,22 @@ public class PlayerController : MonoBehaviour
 {
     #region Properties
     public Vector2 TargetPosition { get; set; }
+    public float Speed { get => speed; set => speed = value > lowerSpeedLimit ? value : lowerSpeedLimit; }
     #endregion
 
     #region Fields
+    [SerializeField] float startSpeed;
+    [SerializeField] float lowerSpeedLimit;
+    
     Player player;
     float speed;
-    const float defaultSpeed = 5f;
     #endregion
 
     #region Methods
     void Awake()
     {
         player = GetComponent<Player>();
-        speed = defaultSpeed;
+        speed = startSpeed;
     }
     public void FixedUpdate()
     {
@@ -25,10 +28,10 @@ public class PlayerController : MonoBehaviour
     public void Reset()
     {
         transform.position = TargetPosition = Vector3.zero;
-        speed = defaultSpeed;
+        speed = startSpeed;
     }
 
-    private void Move(Vector2 position)
+    void Move(Vector2 position)
     {
         Vector2 newPosition = transform.position = Vector2.MoveTowards(
             transform.position,

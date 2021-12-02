@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public PlayerController Controller { get; private set; }
     public FieldSector CurrentFieldSector { get; set; }
     public List<Player> VisiblePlayers { get; } = new List<Player>();
+    public List<Food> VisibleFood { get; } = new List<Food>();
     #endregion
 
     #region Methods
@@ -29,6 +30,29 @@ public class Player : MonoBehaviour
         Id = default;
         Username = default;
         Controller?.Reset();
+    }
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Food"))
+        {
+            GameObject foodGameObject = collision.gameObject;
+            Food food = foodGameObject.GetComponent<Food>(); ;
+
+            food.FieldSector.Food.Remove(food);
+            food.FieldSector = default;
+
+            foodGameObject.SetActive(false);
+            EatFood(food);
+        }
+    }
+    public void EatFood(Food food)
+    {
+        float sizeChange = food.SizeChange;
+        transform.localScale += new Vector3(sizeChange, sizeChange);
+
+        Controller.Speed += food.SpeedChange;
+
+        ServerPacketsSender.EatingFoodForVisiblePlayers(this, food, sizeChange);
     }
     #endregion
 }

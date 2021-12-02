@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6095138867601648091}
   - component: {fileID: 6095138867601648090}
+  - component: {fileID: 2609398691762329046}
   m_Layer: 0
   m_Name: BaseFood
   m_TagString: Food
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 6095138867601648089}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -46,4 +47,18 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.49999997
+  m_Radius: 0.0001
+--- !u!114 &2609398691762329046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6095138867601648089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0831ee64e8166bc40a699c476befaf11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sizeChange: 0.03
+  speedChange: -0.008

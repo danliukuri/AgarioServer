@@ -75,27 +75,34 @@ static class ServerPacketsSender
         }
     }
 
-    static void SpawnFood(int toClient, FieldSector fieldSector, Vector2 position)
+    static void SpawnFood(int toClient, int foodId, Vector2 position)
     {
         using (Packet packet = new Packet((int)ServerPackets.SpawnFood))
         {
-            (int hightIndex, int widthIndex) = fieldSector.Indexes;
-            packet.Write(hightIndex);
-            packet.Write(widthIndex);
+            packet.Write(foodId);
             packet.Write(position);
 
             SendTCPData(toClient, packet);
         }
     }
-    static void RemoveFood(int toClient, FieldSector fieldSector)
+    static void RemoveFood(int toClient, int foodId)
     {
         using (Packet packet = new Packet((int)ServerPackets.RemoveFood))
         {
-            (int hightIndex, int widthIndex) = fieldSector.Indexes;
-            packet.Write(hightIndex);
-            packet.Write(widthIndex);
+            packet.Write(foodId);
 
             SendTCPData(toClient, packet);
+        }
+    }
+
+    static void EatingFood(int toClient, int fromClient, float sizeChange)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.EatingFood))
+        {
+            packet.Write(fromClient);
+            packet.Write(sizeChange);
+
+            SendUDPData(toClient, packet);
         }
     }
     #endregion
@@ -184,11 +191,11 @@ static class ServerPacketsSender
         List<FieldSector> sectorsWithVisibleFood = Field.GetSectorsInExtendedZone(player.CurrentFieldSector,
             Field.ExpansionMagnitudeOfVisibleSectors);
         foreach (FieldSector fieldSector in sectorsWithVisibleFood)
-            foreach (Transform food in fieldSector.Food)
+            foreach (Food food in fieldSector.Food)
                 if (!player.VisibleFood.Contains(food))
                 {
                     player.VisibleFood.Add(food);
-                    SpawnFood(playerId, fieldSector, food.position); // Spawn visible food for player
+                    SpawnFood(playerId, food.Id, food.transform.position); // Spawn visible food for player
                 }
     }
     public static void RemoveInvisibleFood(Player player, FieldSector fieldSector)
@@ -208,13 +215,37 @@ static class ServerPacketsSender
                     isSectorWithInvisibleFoodVisible = false;
 
             if (isSectorWithInvisibleFoodVisible)
-                foreach (Transform food in sectorWithInvisibleFood.Food)
+                foreach (Food food in sectorWithInvisibleFood.Food)
                     if (player.VisibleFood.Contains(food))
                     {
                         player.VisibleFood.Remove(food);
                         /// Remove invisible food for player 
-                        RemoveFood(playerId, sectorWithInvisibleFood);
+                        RemoveFood(playerId, food.Id);
                     }
+        }
+    }
+
+    public static void EatingFoodForVisiblePlayers(Player player, Food food, float sizeChange)
+    {
+        int playerId = player.Id;
+        int foodId = food.Id;
+        if (player.VisibleFood.Contains(food))
+        {
+            player.VisibleFood.Remove(food);
+            RemoveFood(playerId, foodId);
+        }
+        EatingFood(playerId, playerId, sizeChange); // Send this player that he ate food
+        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
+        foreach (Player otherPlayer in otherPlayers)
+        {
+            if (player.VisiblePlayers.Contains(otherPlayer) && otherPlayer.VisibleFood.Contains(food))
+            {
+                otherPlayer.VisibleFood.Remove(food);
+                RemoveFood(playerId, foodId);
+            }
+            // Send that this player ate food to his visible players
+            EatingFood(otherPlayer.Id, playerId, sizeChange);
         }
     }
     #endregion

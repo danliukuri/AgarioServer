@@ -11,6 +11,8 @@ public class FoodSpawner : MonoBehaviour
     [SerializeField] GameObject foodPrefab;
     [SerializeField] float spawnRate;
     [SerializeField] float percentageIndentFromSectorEdgesToSpawnFood;
+
+    int foodId = 0;
     #endregion
 
     #region Methods
@@ -22,13 +24,14 @@ public class FoodSpawner : MonoBehaviour
     public void Spawn()
     {
         GameObject foodGameObject = PoolManager.GetGameObject(foodPrefab.name);
-        Transform foodTransform = foodGameObject.transform;
-
         FieldSector fieldSector = Field.GetRandomFieldSector();
-        fieldSector.Food.Add(foodTransform);
-
-        foodTransform.position = Field.GetRandomPositionInTheSector(
+        foodGameObject.transform.position = Field.GetRandomPositionInTheSector(
             fieldSector.transform.position, percentageIndentFromSectorEdgesToSpawnFood);
+
+        Food food = foodGameObject.GetComponent<Food>();
+        food.Id = foodId++;
+        food.FieldSector = fieldSector;
+        fieldSector.Food.Add(food);
         foodGameObject.SetActive(true);
     }
     #endregion

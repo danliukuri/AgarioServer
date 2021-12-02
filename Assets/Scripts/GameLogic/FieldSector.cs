@@ -6,12 +6,12 @@ public class FieldSector : MonoBehaviour
     #region Properties
     public (int Hight, int Width) Indexes { get; set; }
     public IReadOnlyList<Player> Players => players;
-    public List<Transform> Food => food;
+
+    public List<Food> Food { get; set; } = new List<Food>();
     #endregion
 
     #region Fields
     List<Player> players = new List<Player>();
-    List<Transform> food = new List<Transform>();
     #endregion
 
     #region Methods
