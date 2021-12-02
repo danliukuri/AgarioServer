@@ -8,7 +8,7 @@ public class PlayersManager : MonoBehaviour
     [Tooltip("The number that shows how many sectors you need to retreat " +
         "from the edge of the field for players to spawn.")]
     [SerializeField] int numberOfSectorsToIndentToSpawnPlayers;
-
+    [SerializeField] float percentageIndentFromSectorEdgesToSpawnPlayers;
     static PlayersManager instance;
     #endregion
 
@@ -26,23 +26,13 @@ public class PlayersManager : MonoBehaviour
         }
     }
 
-    static FieldSector GetFieldSectorForPlayerSpawn() => Field.GetSector(
-        Random.Range(instance.numberOfSectorsToIndentToSpawnPlayers,
-            Field.NumberOfSectorsPerHeight - instance.numberOfSectorsToIndentToSpawnPlayers),
-        Random.Range(instance.numberOfSectorsToIndentToSpawnPlayers,
-            Field.NumberOfSectorsPerWidth - instance.numberOfSectorsToIndentToSpawnPlayers));
-    static Vector2 GetRandomPositionInTheSector(Vector2 sectorSize,
-        Vector3 startFieldSectorPosition) => new Vector2(
-            startFieldSectorPosition.x + sectorSize.x* Random.value - 0.5f,
-            startFieldSectorPosition.y + sectorSize.y* Random.value - 0.5f);
-
     public static Player SpawnPlayer(int id, string playerName) 
     {
         GameObject playerGameObject = PoolManager.GetGameObject(instance.playerPrefab.name);
 
-        FieldSector startFieldSector = GetFieldSectorForPlayerSpawn();
-        playerGameObject.transform.position = GetRandomPositionInTheSector(Field.SectorSize,
-            startFieldSector.transform.position);
+        FieldSector startFieldSector = Field.GetRandomFieldSector(instance.numberOfSectorsToIndentToSpawnPlayers);
+        playerGameObject.transform.position = Field.GetRandomPositionInTheSector(
+            startFieldSector.transform.position, instance.percentageIndentFromSectorEdgesToSpawnPlayers);
 
         Player player = playerGameObject.GetComponent<Player>();
         player.Controller.TargetPosition = playerGameObject.transform.position;

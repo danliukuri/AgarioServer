@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-class ServerPacketsSender
+static class ServerPacketsSender
 {
     #region PacketsSending
     public static void Welcome(int toClient, string msg)
@@ -35,9 +35,9 @@ class ServerPacketsSender
     {
         using (Packet packet = new Packet((int)ServerPackets.CurrentFieldSectorUpdate))
         {
-            (int HightIndex, int WidthIndex) = fieldSector.Indexes;
-            packet.Write(HightIndex);
-            packet.Write(WidthIndex);
+            (int hightIndex, int widthIndex) = fieldSector.Indexes;
+            packet.Write(hightIndex);
+            packet.Write(widthIndex);
 
             SendTCPData(toClient, packet);
         }
@@ -74,6 +74,30 @@ class ServerPacketsSender
             SendUDPData(toClient, packet);
         }
     }
+
+    static void SpawnFood(int toClient, FieldSector fieldSector, Vector2 position)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.SpawnFood))
+        {
+            (int hightIndex, int widthIndex) = fieldSector.Indexes;
+            packet.Write(hightIndex);
+            packet.Write(widthIndex);
+            packet.Write(position);
+
+            SendTCPData(toClient, packet);
+        }
+    }
+    static void RemoveFood(int toClient, FieldSector fieldSector)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.RemoveFood))
+        {
+            (int hightIndex, int widthIndex) = fieldSector.Indexes;
+            packet.Write(hightIndex);
+            packet.Write(widthIndex);
+
+            SendTCPData(toClient, packet);
+        }
+    }
     #endregion
 
     #region PacketsSendingExtensions
@@ -81,49 +105,49 @@ class ServerPacketsSender
     {
         int playerId = player.Id;
 
-        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+        List<Player> visibleOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
             player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
-        foreach (Player otherPlayer in otherPlayers)
+        foreach (Player visibleOtherPlayer in visibleOtherPlayers)
         {
-            if (!player.VisiblePlayers.Contains(otherPlayer))
+            if (!player.VisiblePlayers.Contains(visibleOtherPlayer))
             {
-                player.VisiblePlayers.Add(otherPlayer);
-                SpawnPlayer(playerId, otherPlayer); // Spawn visible players for player
+                player.VisiblePlayers.Add(visibleOtherPlayer);
+                SpawnPlayer(playerId, visibleOtherPlayer); // Spawn visible players for player
             }
-            if (!otherPlayer.VisiblePlayers.Contains(player))
+            if (!visibleOtherPlayer.VisiblePlayers.Contains(player))
             {
-                otherPlayer.VisiblePlayers.Add(player);
-                SpawnPlayer(otherPlayer.Id, player); // Spawn player for visible players
+                visibleOtherPlayer.VisiblePlayers.Add(player);
+                SpawnPlayer(visibleOtherPlayer.Id, player); // Spawn player for visible players
             }
         }
     }
-    public static void RemoveInvisiblePlayers(Player player, FieldSector previousPlayerFieldSector)
+    public static void RemoveInvisiblePlayers(Player player, FieldSector fieldSector)
     {
         int playerId = player.Id;
 
-        List<Player> previousOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
-            previousPlayerFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
-        List<Player> currentOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
-            player.CurrentFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
+        List<Player> invisibleOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            fieldSector, Field.ExpansionMagnitudeOfInvisibleSectors + 1);
+        List<Player> visibleOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            fieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
 
-        foreach (Player previousOtherPlayer in previousOtherPlayers)
+        foreach (Player invisibleOtherPlayer in invisibleOtherPlayers)
         {
-            bool isPreviousOtherPlayerNotCurrent = true;
-            foreach (Player currentOtherPlayer in currentOtherPlayers)
-                if (previousOtherPlayer == currentOtherPlayer)
-                    isPreviousOtherPlayerNotCurrent = false;
+            bool isInvisibleOtherPlayerVisible = true;
+            foreach (Player visibleOtherPlayer in visibleOtherPlayers)
+                if (invisibleOtherPlayer == visibleOtherPlayer)
+                    isInvisibleOtherPlayerVisible = false;
 
-            if (isPreviousOtherPlayerNotCurrent)
+            if (isInvisibleOtherPlayerVisible)
             {
-                if (player.VisiblePlayers.Contains(previousOtherPlayer))
+                if (player.VisiblePlayers.Contains(invisibleOtherPlayer))
                 {
-                    player.VisiblePlayers.Remove(previousOtherPlayer);
-                    RemovePlayer(playerId, previousOtherPlayer.Id); // Remove invisible players for player 
+                    player.VisiblePlayers.Remove(invisibleOtherPlayer);
+                    RemovePlayer(playerId, invisibleOtherPlayer.Id); // Remove invisible players for player 
                 }
-                if (previousOtherPlayer.VisiblePlayers.Contains(player))
+                if (invisibleOtherPlayer.VisiblePlayers.Contains(player))
                 {
-                    previousOtherPlayer.VisiblePlayers.Remove(player);
-                    RemovePlayer(previousOtherPlayer.Id, playerId); // Remove player for invisible players
+                    invisibleOtherPlayer.VisiblePlayers.Remove(player);
+                    RemovePlayer(invisibleOtherPlayer.Id, playerId); // Remove player for invisible players
                 }
             }
         }
@@ -132,13 +156,13 @@ class ServerPacketsSender
     {
         int playerId = player.Id;
 
-        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+        List<Player> visibleOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
             player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
-        foreach (Player otherPlayer in otherPlayers)
-            if (otherPlayer.VisiblePlayers.Contains(player))
+        foreach (Player visibleOtherPlayer in visibleOtherPlayers)
+            if (visibleOtherPlayer.VisiblePlayers.Contains(player))
             {
-                otherPlayer.VisiblePlayers.Remove(player);
-                RemovePlayer(otherPlayer.Id, playerId); // Remove player for visible players
+                visibleOtherPlayer.VisiblePlayers.Remove(player);
+                RemovePlayer(visibleOtherPlayer.Id, playerId); // Remove player for visible players
             }
     }
 
@@ -152,6 +176,46 @@ class ServerPacketsSender
             if (player.VisiblePlayers.Contains(otherPlayer))
                 // Send this player's movement to his visible players
                 PlayerMovement(otherPlayer.Id, playerId, position);
+    }
+
+    public static void SpawnVisibleFood(Player player)
+    {
+        int playerId = player.Id;
+        List<FieldSector> sectorsWithVisibleFood = Field.GetSectorsInExtendedZone(player.CurrentFieldSector,
+            Field.ExpansionMagnitudeOfVisibleSectors);
+        foreach (FieldSector fieldSector in sectorsWithVisibleFood)
+            foreach (Transform food in fieldSector.Food)
+                if (!player.VisibleFood.Contains(food))
+                {
+                    player.VisibleFood.Add(food);
+                    SpawnFood(playerId, fieldSector, food.position); // Spawn visible food for player
+                }
+    }
+    public static void RemoveInvisibleFood(Player player, FieldSector fieldSector)
+    {
+        List<FieldSector> sectorsWithInvisibleFood = Field.GetSectorsInExtendedZone(
+            fieldSector, Field.ExpansionMagnitudeOfInvisibleSectors + 1);
+        List<FieldSector> sectorsWithVisibleFood = Field.GetSectorsInExtendedZone(
+            fieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
+
+        int playerId = player.Id;
+
+        foreach (FieldSector sectorWithInvisibleFood in sectorsWithInvisibleFood)
+        {
+            bool isSectorWithInvisibleFoodVisible = true;
+            foreach (FieldSector sectorWithVisibleFood in sectorsWithVisibleFood)
+                if (sectorWithInvisibleFood == sectorWithVisibleFood)
+                    isSectorWithInvisibleFoodVisible = false;
+
+            if (isSectorWithInvisibleFoodVisible)
+                foreach (Transform food in sectorWithInvisibleFood.Food)
+                    if (player.VisibleFood.Contains(food))
+                    {
+                        player.VisibleFood.Remove(food);
+                        /// Remove invisible food for player 
+                        RemoveFood(playerId, sectorWithInvisibleFood);
+                    }
+        }
     }
     #endregion
 

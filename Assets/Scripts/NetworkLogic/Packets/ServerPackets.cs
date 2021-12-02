@@ -6,5 +6,7 @@ public enum ServerPackets
     CurrentFieldSectorUpdate,
     SpawnPlayer,
     RemovePlayer,
-    PlayerMovement
+    PlayerMovement,
+    SpawnFood,
+    RemoveFood
 }

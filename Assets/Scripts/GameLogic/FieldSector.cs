@@ -6,10 +6,12 @@ public class FieldSector : MonoBehaviour
     #region Properties
     public (int Hight, int Width) Indexes { get; set; }
     public IReadOnlyList<Player> Players => players;
+    public List<Transform> Food => food;
     #endregion
 
     #region Fields
     List<Player> players = new List<Player>();
+    List<Transform> food = new List<Transform>();
     #endregion
 
     #region Methods
@@ -23,6 +25,7 @@ public class FieldSector : MonoBehaviour
             player.CurrentFieldSector = currentPlayerFieldSector;
 
             ServerPacketsSender.SpawnVisiblePlayers(player);
+            ServerPacketsSender.SpawnVisibleFood(player);
             ServerPacketsSender.CurrentFieldSectorUpdate(player.Id, currentPlayerFieldSector);
         }
     }
@@ -32,8 +35,10 @@ public class FieldSector : MonoBehaviour
         {
             Player player = collision.gameObject.GetComponent<Player>();
             players.Remove(player);
+            FieldSector previousPlayerFieldSector = this;
 
-            ServerPacketsSender.RemoveInvisiblePlayers(player, this);
+            ServerPacketsSender.RemoveInvisiblePlayers(player, previousPlayerFieldSector);
+            ServerPacketsSender.RemoveInvisibleFood(player, previousPlayerFieldSector);
         }
     }
     #endregion
