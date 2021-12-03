@@ -10,7 +10,8 @@ public class PlayerController : MonoBehaviour
     #region Fields
     [SerializeField] float startSpeed;
     [SerializeField] float lowerSpeedLimit;
-    
+
+    static Vector3 defaultPosition;
     Player player;
     float speed;
     #endregion
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     {
         player = GetComponent<Player>();
         speed = startSpeed;
+        defaultPosition = transform.position;
     }
     public void FixedUpdate()
     {
@@ -27,7 +29,7 @@ public class PlayerController : MonoBehaviour
     }
     public void Reset()
     {
-        transform.position = TargetPosition = Vector3.zero;
+        transform.position = TargetPosition = defaultPosition;
         speed = startSpeed;
     }
 

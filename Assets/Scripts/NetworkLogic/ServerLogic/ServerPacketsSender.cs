@@ -49,7 +49,9 @@ static class ServerPacketsSender
         {
             packet.Write(player.Id);
             packet.Write(player.Username);
-            packet.Write(player.transform.position);
+            Vector2 playerPosition = player.transform.position;
+            packet.Write(playerPosition);
+            packet.Write(player.Size);
 
             SendTCPData(toClient, packet);
         }

@@ -7,29 +7,46 @@ public class Player : MonoBehaviour
     #region Properties
     public int Id { get; private set; }
     public string Username { get; private set; }
+
     public PlayerController Controller { get; private set; }
     public FieldSector CurrentFieldSector { get; set; }
-    public List<Player> VisiblePlayers { get; } = new List<Player>();
-    public List<Food> VisibleFood { get; } = new List<Food>();
+
+    public List<Player> VisiblePlayers { get; private set; } = new List<Player>();
+    public List<Food> VisibleFood { get; private set; } = new List<Food>();
+
+    public float Size
+    {
+        get => transform.localScale.x;
+        private set => transform.localScale = new Vector3(value, value, defaultSize);
+    }
+    #endregion
+
+    #region Fields
+    static float defaultSize;
     #endregion
 
     #region Methods
-    public void Initialize(int id, string username, FieldSector startFieldSector)
-    {
-        Id = id;
-        Username = username;
-        CurrentFieldSector = startFieldSector;
-    }
-
     void Awake()
     {
         Controller = GetComponent<PlayerController>();
+        defaultSize = transform.localScale.x;
+    }
+    public void Initialize(int id, string username, FieldSector currentFieldSector, float size)
+    {
+        Id = id;
+        Username = username;
+        CurrentFieldSector = currentFieldSector;
+        Size = size;
     }
     public void Reset()
     {
         Id = default;
         Username = default;
         Controller?.Reset();
+        CurrentFieldSector = default;
+        VisiblePlayers = new List<Player>();
+        VisibleFood = new List<Food>();
+        Size = defaultSize;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -45,7 +62,7 @@ public class Player : MonoBehaviour
     public void EatFood(Food food)
     {
         float sizeChange = food.SizeChange;
-        transform.localScale += new Vector3(sizeChange, sizeChange);
+        Size += sizeChange;
 
         Controller.Speed += food.SpeedChange;
 

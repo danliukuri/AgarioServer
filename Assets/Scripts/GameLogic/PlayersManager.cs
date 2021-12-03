@@ -37,7 +37,9 @@ public class PlayersManager : MonoBehaviour
         Player player = playerGameObject.GetComponent<Player>();
         player.Controller.TargetPosition = playerGameObject.transform.position;
 
-        player.Initialize(id, playerName, startFieldSector);
+        float defaultSize = playerGameObject.transform.localScale.x;
+
+        player.Initialize(id, playerName, startFieldSector, defaultSize);
         playerGameObject.SetActive(true);
 
         ServerPacketsSender.FieldGenerated(id);
