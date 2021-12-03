@@ -31,16 +31,13 @@ public class Player : MonoBehaviour
         Username = default;
         Controller?.Reset();
     }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Food"))
         {
             GameObject foodGameObject = collision.gameObject;
             Food food = foodGameObject.GetComponent<Food>(); ;
-
-            food.FieldSector.Food.Remove(food);
-            food.FieldSector = default;
-
             foodGameObject.SetActive(false);
             EatFood(food);
         }
@@ -53,6 +50,7 @@ public class Player : MonoBehaviour
         Controller.Speed += food.SpeedChange;
 
         ServerPacketsSender.EatingFoodForVisiblePlayers(this, food, sizeChange);
+        food.Reset();
     }
     #endregion
 }

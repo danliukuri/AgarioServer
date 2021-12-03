@@ -236,16 +236,19 @@ static class ServerPacketsSender
         }
         EatingFood(playerId, playerId, sizeChange); // Send this player that he ate food
         List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
-            player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors);
         foreach (Player otherPlayer in otherPlayers)
         {
-            if (player.VisiblePlayers.Contains(otherPlayer) && otherPlayer.VisibleFood.Contains(food))
+            if (otherPlayer.VisibleFood.Contains(food))
             {
                 otherPlayer.VisibleFood.Remove(food);
-                RemoveFood(playerId, foodId);
+                RemoveFood(otherPlayer.Id, foodId);
             }
-            // Send that this player ate food to his visible players
-            EatingFood(otherPlayer.Id, playerId, sizeChange);
+            if (otherPlayer.VisiblePlayers.Contains(player))
+            {
+                // Send that this player ate food to his visible players
+                EatingFood(otherPlayer.Id, playerId, sizeChange);
+            }
         }
     }
     #endregion

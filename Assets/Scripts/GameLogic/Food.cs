@@ -13,4 +13,13 @@ public class Food : MonoBehaviour
     [SerializeField] float sizeChange;
     [SerializeField] float speedChange;
     #endregion
+
+    #region Methods
+    public void Reset()
+    {
+        Id = default;
+        FieldSector.Food.Remove(this);
+        FieldSector = default;
+    }
+    #endregion
 }
