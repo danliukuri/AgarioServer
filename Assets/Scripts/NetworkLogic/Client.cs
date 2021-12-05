@@ -7,6 +7,7 @@ class Client
     public Player Player { get; set; }
     public TCP Tcp { get; private set; }
     public UDP Udp { get; private set; }
+    public bool IsConnected { get; set; }
     #endregion
 
     #region Methods
@@ -29,15 +30,19 @@ class Client
     /// <summary>Disconnects the client and stops all network traffic.</summary>
     public void Disconnect()
     {
-        Debug.Log($"{Tcp.Socket.Client.RemoteEndPoint} has disconnected.");
-
-        Tcp.Disconnect();
-        Udp.Disconnect();
-
-        if (Player != default)
+        if (IsConnected)
         {
-            ServerPacketsSender.RemovePlayerForInvisiblePlayers(Player);
-            PlayersManager.RemovePlayer(Player);
+            IsConnected = false;
+            Debug.Log($"{Tcp.Socket.Client.RemoteEndPoint} has disconnected.");
+
+            Tcp.Disconnect();
+            Udp.Disconnect();
+
+            if (Player != default)
+            {
+                ServerPacketsSender.RemovePlayerForInvisiblePlayers(Player);
+                PlayersManager.RemovePlayer(Player);
+            }
         }
     }
     #endregion

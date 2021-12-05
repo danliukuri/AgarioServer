@@ -58,7 +58,6 @@ class Server
     }
 
     public static Client GetClient(int index) => clients[index];
-    public static int ClientsCount() => clients.Length;
 
     public static PacketHandler GetPacketHandler(int index) => packetHandlers[index];
 
@@ -73,6 +72,7 @@ class Server
             if (clients[i].Tcp.Socket == null)
             {
                 clients[i].Tcp.Connect(clientSocket);
+                clients[i].IsConnected = true;
                 return;
             }
         }
