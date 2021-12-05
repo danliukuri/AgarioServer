@@ -161,13 +161,14 @@ static class ServerPacketsSender
             }
         }
     }
-    public static void PlayerDisconnected(Player player)
+
+    public static void RemovePlayerForInvisiblePlayers(Player player)
     {
         int playerId = player.Id;
 
-        List<Player> visibleOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
-            player.CurrentFieldSector, Field.ExpansionMagnitudeOfVisibleSectors);
-        foreach (Player visibleOtherPlayer in visibleOtherPlayers)
+        List<Player> invisibleOtherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors + 1);
+        foreach (Player visibleOtherPlayer in invisibleOtherPlayers)
             if (visibleOtherPlayer.VisiblePlayers.Contains(player))
             {
                 visibleOtherPlayer.VisiblePlayers.Remove(player);

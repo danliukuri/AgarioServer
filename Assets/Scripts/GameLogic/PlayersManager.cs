@@ -48,6 +48,8 @@ public class PlayersManager : MonoBehaviour
     }
     public static void RemovePlayer(Player player)
     {
+        Server.GetClient(player.Id).Player = default;
+        
         player.Reset();
         player.gameObject.SetActive(false);
     }

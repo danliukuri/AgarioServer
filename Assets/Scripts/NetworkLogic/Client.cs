@@ -4,7 +4,7 @@ class Client
 {
     #region Properties
     public int Id { get; private set; }
-    public Player Player { get; private set; }
+    public Player Player { get; set; }
     public TCP Tcp { get; private set; }
     public UDP Udp { get; private set; }
     #endregion
@@ -31,16 +31,14 @@ class Client
     {
         Debug.Log($"{Tcp.Socket.Client.RemoteEndPoint} has disconnected.");
 
-        ThreadManager.ExecuteOnMainThread(() =>
-        {
-            PlayersManager.RemovePlayer(Player);
-            Player = null;
-        });
-
         Tcp.Disconnect();
         Udp.Disconnect();
 
-        ServerPacketsSender.PlayerDisconnected(Player);
+        if (Player != default)
+        {
+            ServerPacketsSender.RemovePlayerForInvisiblePlayers(Player);
+            PlayersManager.RemovePlayer(Player);
+        }
     }
     #endregion
 }
