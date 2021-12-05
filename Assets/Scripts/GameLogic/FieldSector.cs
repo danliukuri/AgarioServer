@@ -5,13 +5,8 @@ public class FieldSector : MonoBehaviour
 {
     #region Properties
     public (int Height, int Width) Indexes { get; set; }
-    public IReadOnlyList<Player> Players => players;
-
+    public List<Player> Players { get; set; } = new List<Player>();
     public List<Food> Food { get; set; } = new List<Food>();
-    #endregion
-
-    #region Fields
-    List<Player> players = new List<Player>();
     #endregion
 
     #region Methods
@@ -20,7 +15,7 @@ public class FieldSector : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Player player = collision.gameObject.GetComponent<Player>();
-            players.Add(player);
+            Players.Add(player);
             FieldSector currentPlayerFieldSector = this;
             player.CurrentFieldSector = currentPlayerFieldSector;
 
@@ -34,7 +29,7 @@ public class FieldSector : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Player player = collision.gameObject.GetComponent<Player>();
-            players.Remove(player);
+            Players.Remove(player);
             FieldSector previousPlayerFieldSector = this;
 
             ServerPacketsSender.RemoveInvisiblePlayers(player, previousPlayerFieldSector);

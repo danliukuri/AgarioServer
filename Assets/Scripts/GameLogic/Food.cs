@@ -18,7 +18,7 @@ public class Food : MonoBehaviour
     public void Reset()
     {
         Id = default;
-        FieldSector.Food.Remove(this);
+        FieldSector?.Food.Remove(this);
         FieldSector = default;
     }
     #endregion

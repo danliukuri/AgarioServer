@@ -43,7 +43,12 @@ public class Player : MonoBehaviour
         Id = default;
         Username = default;
         Controller?.Reset();
-        CurrentFieldSector = default;
+        if (CurrentFieldSector != default)
+        {
+            if (CurrentFieldSector.Players.Contains(this))
+                CurrentFieldSector.Players.Remove(this);
+            CurrentFieldSector = default;
+        }
         VisiblePlayers = new List<Player>();
         VisibleFood = new List<Food>();
         Size = defaultSize;
