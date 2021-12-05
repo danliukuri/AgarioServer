@@ -107,6 +107,14 @@ static class ServerPacketsSender
             SendUDPData(toClient, packet);
         }
     }
+
+    public static void Losing(int toClient)
+    {
+        using (Packet packet = new Packet((int)ServerPackets.Losing))
+        {
+            SendTCPData(toClient, packet);
+        }
+    }
     #endregion
 
     #region PacketsSendingExtensions
@@ -250,6 +258,32 @@ static class ServerPacketsSender
             if (otherPlayer.VisiblePlayers.Contains(player))
             {
                 // Send that this player ate food to his visible players
+                EatingFood(otherPlayer.Id, playerId, sizeChange);
+            }
+        }
+    }
+    public static void EatingPlayerForVisiblePlayers(Player player, Player eatenPlayer, float sizeChange)
+    {
+        int playerId = player.Id;
+
+        if (player.VisiblePlayers.Contains(eatenPlayer))
+        {
+            player.VisiblePlayers.Remove(eatenPlayer);
+            RemovePlayer(player.Id, eatenPlayer.Id); // Remove player for visible players
+        }
+        EatingFood(playerId, playerId, sizeChange); // Send this player that he ate player
+        List<Player> otherPlayers = Field.GetOtherPlayersInExtendedZone(playerId,
+            player.CurrentFieldSector, Field.ExpansionMagnitudeOfInvisibleSectors + 1);
+        foreach (Player otherPlayer in otherPlayers)
+        {
+            if (otherPlayer.VisiblePlayers.Contains(eatenPlayer))
+            {
+                otherPlayer.VisiblePlayers.Remove(eatenPlayer);
+                RemovePlayer(otherPlayer.Id, eatenPlayer.Id); // Remove player for visible players
+            }
+            if (otherPlayer.VisiblePlayers.Contains(player))
+            {
+                // Send that this player ate player to his visible players
                 EatingFood(otherPlayer.Id, playerId, sizeChange);
             }
         }

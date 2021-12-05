@@ -9,5 +9,6 @@ public enum ServerPackets
     PlayerMovement,
     SpawnFood,
     RemoveFood,
-    EatingFood
+    EatingFood,
+    Losing
 }

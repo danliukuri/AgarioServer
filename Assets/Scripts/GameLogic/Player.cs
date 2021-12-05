@@ -19,9 +19,14 @@ public class Player : MonoBehaviour
         get => transform.localScale.x;
         private set => transform.localScale = new Vector3(value, value, defaultSize);
     }
+    public float SizeChange { get => Size / sizeDivider; }
+    public float SpeedChange { get => Size / speedDivider; }
     #endregion
 
     #region Fields
+    [SerializeField] float sizeDivider;
+    [SerializeField] float speedDivider;
+    [SerializeField] float sizeDifferenceToEatAnotherPlayer;
     static float defaultSize;
     #endregion
 
@@ -64,6 +69,16 @@ public class Player : MonoBehaviour
             EatFood(food);
         }
     }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            Player player = collision.gameObject.GetComponent<Player>();
+            if (Size > player.Size + sizeDifferenceToEatAnotherPlayer)
+                EatPlayer(player);
+        }
+    }
+
     public void EatFood(Food food)
     {
         float sizeChange = food.SizeChange;
@@ -73,6 +88,17 @@ public class Player : MonoBehaviour
 
         ServerPacketsSender.EatingFoodForVisiblePlayers(this, food, sizeChange);
         food.Reset();
+    }
+    public void EatPlayer(Player player)
+    {
+        float sizeChange = player.SizeChange;
+        Size += sizeChange;
+
+        Controller.Speed += player.SpeedChange;
+
+        ServerPacketsSender.EatingPlayerForVisiblePlayers(this, player, sizeChange);
+        ServerPacketsSender.Losing(player.Id);
+        PlayersManager.RemovePlayer(player);
     }
     #endregion
 }

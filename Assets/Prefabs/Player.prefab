@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8398bcee603ae954b8c908ea22b85d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sizeDivider: 2
+  speedDivider: -7.5
+  sizeDifferenceToEatAnotherPlayer: 0
 --- !u!114 &6896674367960793161
 MonoBehaviour:
   m_ObjectHideFlags: 0
