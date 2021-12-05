@@ -62,7 +62,7 @@ public class Field : MonoBehaviour
 
         sectors = new FieldSector[numberOfSectorsPerHeight, numberOfSectorsPerWidth];
     }
-
+    
     public static Vector2 GetRandomPositionInTheSector(Vector3 sectorPosition,
         float percentageIndentFromSectorEdges) => new Vector2(
         sectorPosition.x + (1f - percentageIndentFromSectorEdges) * SectorSize.x * (Random.value - 0.5f),
@@ -75,12 +75,12 @@ public class Field : MonoBehaviour
 
     public static List<FieldSector> GetSectorsInExtendedZone(FieldSector currentFieldSector, int expansionMagnitude)
     {
-        ((int Min, int Max) Hight, (int Min, int Max) Width) sectorsExtendedZone =
+        ((int Min, int Max) Height, (int Min, int Max) Width) sectorsExtendedZone =
             ArrayZone.GetExtendedZone(currentFieldSector.Indexes, expansionMagnitude,
             (NumberOfSectorsPerHeight, NumberOfSectorsPerWidth));
 
         List<FieldSector> sectorsInExtendedZone = new List<FieldSector>();
-        for (int i = sectorsExtendedZone.Hight.Min; i <= sectorsExtendedZone.Hight.Max; i++)
+        for (int i = sectorsExtendedZone.Height.Min; i <= sectorsExtendedZone.Height.Max; i++)
             for (int j = sectorsExtendedZone.Width.Min; j <= sectorsExtendedZone.Width.Max; j++)
                 sectorsInExtendedZone.Add(sectors[i, j]);
         return sectorsInExtendedZone;

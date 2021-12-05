@@ -35,8 +35,8 @@ static class ServerPacketsSender
     {
         using (Packet packet = new Packet((int)ServerPackets.CurrentFieldSectorUpdate))
         {
-            (int hightIndex, int widthIndex) = fieldSector.Indexes;
-            packet.Write(hightIndex);
+            (int heightIndex, int widthIndex) = fieldSector.Indexes;
+            packet.Write(heightIndex);
             packet.Write(widthIndex);
 
             SendTCPData(toClient, packet);

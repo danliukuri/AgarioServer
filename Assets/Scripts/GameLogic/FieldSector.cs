@@ -4,7 +4,7 @@ using UnityEngine;
 public class FieldSector : MonoBehaviour
 {
     #region Properties
-    public (int Hight, int Width) Indexes { get; set; }
+    public (int Height, int Width) Indexes { get; set; }
     public IReadOnlyList<Player> Players => players;
 
     public List<Food> Food { get; set; } = new List<Food>();
