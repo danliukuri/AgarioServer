@@ -115,6 +115,21 @@ static class ServerPacketsSender
             SendTCPData(toClient, packet);
         }
     }
+
+    public static void SendListOfTheBestPlayersNamesBySize()
+    {
+        List<string> playerIds = PlayersManager.GetListOfTheBestPlayersNamesBySize();
+        if (playerIds.Count != 0)
+            using (Packet packet = new Packet((int)ServerPackets.ListOfTheBestPlayersNamesBySize))
+            {
+                packet.Write(playerIds.Count);
+                for (int i = 0; i < playerIds.Count; i++)
+                    packet.Write(playerIds[i]);
+
+                SendTCPDataToAll(packet);
+            }
+    }
+    
     #endregion
 
     #region PacketsSendingExtensions
@@ -291,6 +306,12 @@ static class ServerPacketsSender
     #endregion
 
     #region WaysToSend
+    static void SendTCPDataToAll(Packet packet)
+    {
+        packet.WriteLength();
+        for (int i = 0; i < Server.MaxPlayers; i++)
+            Server.GetClient(i).Tcp.SendData(packet);
+    }
     static void SendTCPData(int toClient, Packet packet)
     {
         packet.WriteLength();

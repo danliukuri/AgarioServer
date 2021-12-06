@@ -10,5 +10,6 @@ public enum ServerPackets
     SpawnFood,
     RemoveFood,
     EatingFood,
-    Losing
+    Losing,
+    ListOfTheBestPlayersNamesBySize
 }
