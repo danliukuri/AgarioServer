@@ -1,4 +1,6 @@
 using Pool;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayersManager : MonoBehaviour
@@ -9,6 +11,10 @@ public class PlayersManager : MonoBehaviour
         "from the edge of the field for players to spawn.")]
     [SerializeField] int numberOfSectorsToIndentToSpawnPlayers;
     [SerializeField] float percentageIndentFromSectorEdgesToSpawnPlayers;
+
+    [SerializeField] int numberOfPlayersInTopLists;
+    static List<Player> players = new List<Player>();
+
     static PlayersManager instance;
     #endregion
 
@@ -35,6 +41,7 @@ public class PlayersManager : MonoBehaviour
             startFieldSector.transform.position, instance.percentageIndentFromSectorEdgesToSpawnPlayers);
 
         Player player = playerGameObject.GetComponent<Player>();
+        players.Add(player);
         player.Controller.TargetPosition = playerGameObject.transform.position;
 
         float defaultSize = playerGameObject.transform.localScale.x;
@@ -48,10 +55,17 @@ public class PlayersManager : MonoBehaviour
     }
     public static void RemovePlayer(Player player)
     {
+        players.Remove(player);
         Server.GetClient(player.Id).Player = default;
         
         player.Reset();
         player.gameObject.SetActive(false);
     }
+
+    public static List<string> GetListOfTheBestPlayersNamesBySize() => players.
+        OrderByDescending(player => player.Size).
+        Select(player => player.Username).
+        Take(instance.numberOfPlayersInTopLists).
+        ToList();
     #endregion
 }
