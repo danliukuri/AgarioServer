@@ -28,6 +28,7 @@ public class GameRoundsManager : MonoBehaviour
             ServerPacketsSender.SendListOfTheBestPlayersNamesBySize();
 
             PlayersManager.ResetPlayerSizes();
+            ServerPacketsSender.ResetPlayerSizes();
         }
     }
     #endregion

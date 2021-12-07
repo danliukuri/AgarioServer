@@ -129,7 +129,14 @@ static class ServerPacketsSender
                 SendTCPDataToAll(packet);
             }
     }
-    
+
+    public static void ResetPlayerSizes()
+    {
+        using (Packet packet = new Packet((int)ServerPackets.ResetPlayerSizes))
+        {
+            SendTCPDataToAll(packet);
+        }
+    }
     #endregion
 
     #region PacketsSendingExtensions
