@@ -56,8 +56,9 @@ public class Player : MonoBehaviour
         }
         VisiblePlayers = new List<Player>();
         VisibleFood = new List<Food>();
-        Size = defaultSize;
+        ResetSize();
     }
+    public void ResetSize() => Size = defaultSize;
 
     void OnTriggerEnter2D(Collider2D collision)
     {

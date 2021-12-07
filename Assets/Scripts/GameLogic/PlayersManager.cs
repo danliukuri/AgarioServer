@@ -67,5 +67,10 @@ public class PlayersManager : MonoBehaviour
         Select(player => player.Username).
         Take(instance.numberOfPlayersInTopLists).
         ToList();
+    public static void ResetPlayerSizes()
+    {
+        foreach (Player player in players)
+            player.ResetSize();
+    }
     #endregion
 }
